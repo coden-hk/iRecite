@@ -2,11 +2,184 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <title>iRecite</title>
+
     <link rel="stylesheet" href="https://cdn.bootcss.com/normalize/7.0.0/normalize.min.css">
+    <link rel="stylesheet" href="https://cdn.bootcss.com/Swiper/4.1.0/css/swiper.min.css">
+    <link rel="stylesheet" href="/assets/css/master.css">
+    <link rel="apple-touch-icon" sizes="57x57" href="/assets/img/icon/icon@57.png"/>
+    <link rel="apple-touch-icon" sizes="72x72" href="/assets/img/icon/icon@72.png"/>
+    <link rel="apple-touch-icon" sizes="114x114" href="/assets/img/icon/icon@114.png"/>
+    <link rel="apple-touch-icon" sizes="144x144" href="/assets/img/icon/icon@144.png"/>
+    <link href="/assets/img/icon/icon@144.png" rel="shortcut icon"/>
+    <link href="/assets/img/icon/icon@144.png" rel="Bookmark"/>
 </head>
 <body>
 
+<div class="hide-button half-opacity clean-button"></div>
+
+<div class="float animation float-hide">
+    <div class="slide-header">
+        <div class="left">
+            <img src="/assets/img/close.svg" alt="" class="close">
+        </div>
+        <div class="middle"></div>
+        <div class="right">
+            <img src="/assets/img/next.svg" alt="" class="backward">
+            <img src="/assets/img/next.svg" alt="" class="forward">
+        </div>
+    </div>
+    <div class="swiper-container">
+        <div class="swiper-slide">
+            <ul class="word-page page-0"></ul>
+        </div>
+        <div class="swiper-slide">
+            <ul class="word-page page-1"></ul>
+        </div>
+        <div class="swiper-slide">
+            <ul class="word-page page-2"></ul>
+        </div>
+        <div class="swiper-slide">
+            <ul class="word-page page-3"></ul>
+        </div>
+        <div class="swiper-slide">
+            <ul class="word-page page-4"></ul>
+        </div>
+        <div class="swiper-slide">
+            <ul class="word-page page-5"></ul>
+        </div>
+        <div class="swiper-slide">
+            <ul class="word-page page-6"></ul>
+        </div>
+        <div class="swiper-slide">
+            <ul class="word-page page-7"></ul>
+        </div>
+        <div class="swiper-slide">
+            <ul class="word-page page-8"></ul>
+        </div>
+        <div class="swiper-slide">
+            <ul class="word-page page-9"></ul>
+        </div>
+        <div class="swiper-slide">
+            <ul class="word-page page-10"></ul>
+        </div>
+        <div class="swiper-slide">
+            <ul class="word-page page-11"></ul>
+        </div>
+    </div>
+</div>
+
+<div class="lock">
+    <div class="bg">
+        <div class="ellipse"></div>
+    </div>
+    <div class="container">
+        <div class="main-title">Word Lists</div>
+        <div class="card">
+            <ul class="word-lists"></ul>
+        </div>
+    </div>
+</div>
 </body>
 <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/Swiper/4.1.0/js/swiper.min.js"></script>
+<script>
+  let list = []
+  let page = 0
+  let speaker = new Audio()
+  for (let i = 0; i < 24; i++) list.push(`Word List ${i + 1}`)
+  $('.word-lists').html(list
+    .map(v => `<li>${v}</li>`)
+    .reduce((res, v) => res + v))
+
+  $('.word-lists > li').click(e => {
+    $('.float').toggleClass('float-hide')
+    $('.middle').html(`<span>Page ${page + 1} / 12</span>`)
+    setTimeout(() => {
+      $('.hide-button').removeClass('clean-button')
+    }, 300)
+  })
+
+  $('.forward').click(e => {
+    if (page >= 11) return
+    page++
+    let t = $('.swiper-container')
+    let w = t.width()
+    t.animate({scrollLeft: w * page}, 300)
+
+    $('.middle').html(`<span>Page ${page + 1} / 12</span>`)
+  })
+
+  $('.backward').click(e => {
+    if (page <= 0) return
+    page--
+    let t = $('.swiper-container')
+    let w = t.width()
+    t.animate({scrollLeft: w * page}, 300)
+
+    $('.middle').html(`<span>Page ${page + 1} / 12</span>`)
+  })
+
+  $('.close').click(e => {
+    $('.float').toggleClass('float-hide')
+    $('.hide-button').addClass('clean-button')
+  })
+
+  function playAudio (w) {
+    speaker.src = 'http://dict.youdao.com/dictvoice?audio=' + w
+    speaker.play()
+  }
+
+  $.get('/data/word-list-2.json')
+    .then(res => {
+      let base = Math.floor(res.length / 12)
+      let remain = res.length % 12
+      let wordPerPage = []
+      for (let i = 0; i < 12; i++) wordPerPage.push(base)
+      wordPerPage = wordPerPage
+        .map((v, i) => v + (i < remain ? 1 : 0))
+
+      let keyMap = {'cn': '中', 'choose': '选', 'antonym': '反', 'derive': '派', 'en': '英'}
+
+      for (let i = 0; i < 12; i++) {
+        // Shift multiple elements
+        let items = res.splice(0, wordPerPage[i])
+
+        let data = items.reduce((result, v) => {
+          let template = `
+        <li>
+            <div class="word" onclick="playAudio('${v.word}')">
+                <div class="en">${v.word}</div>
+                <div class="ipa">${v.ipa}</div>
+            </div>
+            <div class="explanation linear-animation explanation-hide">`
+
+          let explain = v.explain
+            .reduce((e, d) => e +
+              Object
+                .keys(d)
+                .reduce((r, key) => r +
+                  `<div class="row ${key === 'en' ? 'explain-split' : ''}"><div class="exp-key"><span>${keyMap[key]}</span></div><div class="exp-content">${d[key]}</div></div>`
+                  , ''), '')
+          return result + template + explain + '</div></li>'
+        }, '')
+
+        $(`.page-${i}`).html(data)
+
+        $('.hide-button').on('touchstart', e => {
+          $('.explanation').removeClass('explanation-hide')
+          $('.hide-button').removeClass('half-opacity')
+        }).on('touchend', e => {
+          $('.explanation').addClass('explanation-hide')
+          $('.hide-button').addClass('half-opacity')
+        })
+      }
+
+    })
+</script>
 </html>
