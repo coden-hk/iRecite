@@ -94,16 +94,18 @@
   let speaker = new Audio()
   for (let i = 0; i < 24; i++) list.push(`Word List ${i + 1}`)
   $('.word-lists').html(list
-    .map(v => `<li>${v}</li>`)
+    .map((v, i) => `<li onclick="wordListDidClick(${i})">${v}</li>`)
     .reduce((res, v) => res + v))
 
-  $('.word-lists > li').click(e => {
+  function wordListDidClick (l) {
     $('.float').toggleClass('float-hide')
     $('.middle').html(`<span>Page ${page + 1} / 12</span>`)
-    setTimeout(() => {
-      $('.hide-button').removeClass('clean-button')
-    }, 300)
-  })
+    loadData(l + 1, () => {
+      setTimeout(() => {
+        $('.hide-button').removeClass('clean-button')
+      }, 300)
+    })
+  }
 
   $('.forward').click(e => {
     if (page >= 11) return
@@ -135,23 +137,24 @@
     speaker.play()
   }
 
-  $.get('/data/word-list-2.json')
-    .then(res => {
-      let base = Math.floor(res.length / 12)
-      let remain = res.length % 12
-      let wordPerPage = []
-      for (let i = 0; i < 12; i++) wordPerPage.push(base)
-      wordPerPage = wordPerPage
-        .map((v, i) => v + (i < remain ? 1 : 0))
+  function loadData (l, callback) {
+    $.get(`/data/word-list-${l}.json`)
+      .then(res => {
+        let base = Math.floor(res.length / 12)
+        let remain = res.length % 12
+        let wordPerPage = []
+        for (let i = 0; i < 12; i++) wordPerPage.push(base)
+        wordPerPage = wordPerPage
+          .map((v, i) => v + (i < remain ? 1 : 0))
 
-      let keyMap = {'cn': '中', 'choose': '选', 'antonym': '反', 'derive': '派', 'en': '英'}
+        let keyMap = {'cn': '中', 'choose': '选', 'antonym': '反', 'derive': '派', 'en': '英'}
 
-      for (let i = 0; i < 12; i++) {
-        // Shift multiple elements
-        let items = res.splice(0, wordPerPage[i])
+        for (let i = 0; i < 12; i++) {
+          // Shift multiple elements
+          let items = res.splice(0, wordPerPage[i])
 
-        let data = items.reduce((result, v) => {
-          let template = `
+          let data = items.reduce((result, v) => {
+            let template = `
         <li>
             <div class="word" onclick="playAudio('${v.word}')">
                 <div class="en">${v.word}</div>
@@ -159,27 +162,28 @@
             </div>
             <div class="explanation linear-animation explanation-hide">`
 
-          let explain = v.explain
-            .reduce((e, d) => e +
-              Object
-                .keys(d)
-                .reduce((r, key) => r +
-                  `<div class="row ${key === 'en' ? 'explain-split' : ''}"><div class="exp-key"><span>${keyMap[key]}</span></div><div class="exp-content">${d[key]}</div></div>`
-                  , ''), '')
-          return result + template + explain + '</div></li>'
-        }, '')
+            let explain = v.explain
+              .reduce((e, d) => e +
+                Object
+                  .keys(d)
+                  .reduce((r, key) => r +
+                    `<div class="row ${key === 'en' ? 'explain-split' : ''}"><div class="exp-key"><span>${keyMap[key]}</span></div><div class="exp-content">${d[key]}</div></div>`
+                    , ''), '')
+            return result + template + explain + '</div></li>'
+          }, '')
 
-        $(`.page-${i}`).html(data)
+          $(`.page-${i}`).html(data)
 
-        $('.hide-button').on('touchstart', e => {
-          $('.explanation').removeClass('explanation-hide')
-          $('.hide-button').removeClass('half-opacity')
-        }).on('touchend', e => {
-          $('.explanation').addClass('explanation-hide')
-          $('.hide-button').addClass('half-opacity')
-        })
-      }
-
-    })
+          $('.hide-button').on('touchstart', e => {
+            $('.explanation').removeClass('explanation-hide')
+            $('.hide-button').removeClass('half-opacity')
+          }).on('touchend', e => {
+            $('.explanation').addClass('explanation-hide')
+            $('.hide-button').addClass('half-opacity')
+          })
+        }
+        callback()
+      })
+  }
 </script>
 </html>
