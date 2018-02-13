@@ -9,6 +9,15 @@ html, body {
     overflow: hidden;
 }
 
+.version-info {
+    position: fixed;
+    z-index: 1;
+    color: #aaaaaa;
+    bottom: 2vh;
+    right: 5vw;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+}
+
 .lock {
     width: 100vw;
     height: 100vh;
