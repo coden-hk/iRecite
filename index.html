@@ -20,9 +20,9 @@
     <link href="/assets/img/icon/icon@144.png" rel="Bookmark"/>
 </head>
 <body>
-<div class="version-info">2018-2-13</div>
+<div class="version-info">2018-2-13.2</div>
 
-<div class="hide-button half-opacity clean-button"></div>
+<div class="hide-button clean-button"></div>
 
 <div class="float animation float-hide">
     <div class="slide-header">
@@ -177,10 +177,10 @@
 
           $('.hide-button').on('touchstart', e => {
             $('.explanation').removeClass('explanation-hide')
-            $('.hide-button').removeClass('half-opacity')
+            $('.hide-button').addClass('half-opacity')
           }).on('touchend', e => {
             $('.explanation').addClass('explanation-hide')
-            $('.hide-button').addClass('half-opacity')
+            $('.hide-button').removeClass('half-opacity')
           })
         }
         callback()
