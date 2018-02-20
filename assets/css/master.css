@@ -151,7 +151,10 @@ and (orientation: portrait) {
     display: flex;
     flex-wrap: wrap;
     font-family: "Helvetica Neue", Arial, sans-serif;
-    border-top: 1px dashed #cae7fd;
+}
+
+.word-page > li:nth-child(1) {
+    border-top: none;
 }
 
 .word-page > li > .word {
@@ -180,6 +183,9 @@ and (orientation: portrait) {
 and (min-device-width: 768px)
 and (max-device-width: 1024px)
 and (orientation: portrait) {
+    .word-page > li {
+        border-top: 1px dashed #cae7fd;
+    }
     .word-page > li > .word {
         width: 20%;
     }
@@ -227,7 +233,7 @@ and (orientation: portrait) {
 
 .slide-header {
     width: 100vw;
-    height: 60px;
+    height: 40px;
     background: #567AFD;
 
     padding-top: 20px;
@@ -249,15 +255,19 @@ and (orientation: portrait) {
 }
 
 .slide-header > div {
-    height: 60px;
+    height: 40px;
     width: 100px;
     margin: 0 10px;
     display: flex;
 }
 
 .slide-header > div > img {
-    width: 25px;
+    width: 20px;
     margin: 0 10px;
+}
+
+.slide-header > .right {
+    justify-content: flex-end;
 }
 
 .slide-header > .right > .backward {
@@ -267,7 +277,7 @@ and (orientation: portrait) {
 .slide-header > .middle {
     display: flex;
     justify-content: center;
-    line-height: 60px;
+    line-height: 40px;
     font-family: "Helvetica Neue", Arial, sans-serif;
 }
 
