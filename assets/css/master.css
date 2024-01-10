@@ -10,18 +10,22 @@ html, body {
 }
 
 .version-info {
-    position: fixed;
-    z-index: 1;
+    /* position: fixed; */
+    /* z-index: 1; */
     color: #aaaaaa;
-    bottom: 2vh;
-    right: 5vw;
+    /* bottom: 2vh; */
+    /* right: 5vw; */
+    padding: 1em;
+    text-align: right;
+    font-size: 0.8em;
     font-family: "Helvetica Neue", Arial, sans-serif;
 }
 
 .lock {
     width: 100vw;
     height: 100vh;
-    position: fixed;
+    /* position: fixed; */
+    overflow-y: scroll;
 }
 
 .float-hide {
